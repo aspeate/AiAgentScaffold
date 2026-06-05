@@ -1,0 +1,44 @@
+package cn.bugstack.ai.domain.agent.service.armory.node;
+
+import cn.bugstack.ai.domain.agent.model.entity.ArmoryCommandEntity;
+import cn.bugstack.ai.domain.agent.model.valobj.AiAgentConfigTableVO;
+import cn.bugstack.ai.domain.agent.model.valobj.AiAgentRegisterVO;
+import cn.bugstack.ai.domain.agent.service.armory.AbstractArmorySupport;
+import cn.bugstack.ai.domain.agent.service.armory.factory.DefaultArmoryFactory;
+import cn.bugstack.wrench.design.framework.tree.StrategyHandler;
+import com.google.adk.agents.LlmAgent;
+import com.google.adk.models.springai.SpringAI;
+import org.springframework.ai.chat.model.ChatModel;
+
+import java.util.List;
+
+import static com.google.adk.agents.LlmAgent.IncludeContents.NONE;
+
+public class AgentNode extends AbstractArmorySupport {
+    @Override
+    protected AiAgentRegisterVO doApply(ArmoryCommandEntity requestParameter, DefaultArmoryFactory.DynamicContext dynamicContext) throws Exception {
+
+        ChatModel chatModel = dynamicContext.getChatModel();
+
+        AiAgentConfigTableVO aiAgentConfigTableVO = requestParameter.getAiAgentConfigTableVO();
+        List<AiAgentConfigTableVO.Module.ChatModel.Agent> agents = aiAgentConfigTableVO.getModule().getAgents();
+
+        for (AiAgentConfigTableVO.Module.ChatModel.Agent agentConfig : agents) {
+            LlmAgent llmAgent = LlmAgent.builder()
+                    .model(new SpringAI(chatModel))
+                    .name(agentConfig.getName())
+                    .description(agentConfig.getDescription())
+                    .instruction(agentConfig.getInstruction())
+                    .outputKey(agentConfig.getOutputKey())
+                    .build();
+            dynamicContext.getAgentGroup().put(agentConfig.getName(), llmAgent);
+        }
+
+        return router(requestParameter, dynamicContext);
+    }
+
+    @Override
+    public StrategyHandler<ArmoryCommandEntity, DefaultArmoryFactory.DynamicContext, AiAgentRegisterVO> get(ArmoryCommandEntity requestParameter, DefaultArmoryFactory.DynamicContext dynamicContext) throws Exception {
+        return defaultStrategyHandler;
+    }
+}
