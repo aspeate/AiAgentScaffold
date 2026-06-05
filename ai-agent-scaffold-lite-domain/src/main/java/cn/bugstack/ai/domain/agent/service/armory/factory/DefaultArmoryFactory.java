@@ -4,7 +4,11 @@ import cn.bugstack.ai.domain.agent.model.entity.ArmoryCommandEntity;
 import cn.bugstack.ai.domain.agent.model.valobj.AiAgentRegisterVO;
 import cn.bugstack.ai.domain.agent.service.armory.node.RootNode;
 import cn.bugstack.wrench.design.framework.tree.StrategyHandler;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +35,11 @@ public class DefaultArmoryFactory {
          * LLM API
          */
         private OpenAiApi openAiApi;
+        /**
+         * LLM ChatModel
+         */
+        private ChatModel chatModel;
+
 
 
         private Map<String, Object> dataObjects = new HashMap<>();

@@ -8,17 +8,39 @@ import java.util.Map;
 @Data
 public class AiAgentConfigTableVO {
 
+    /**
+     * 应用名称
+     */
     private String appName;
 
+    /**
+     * 智能体配置
+     */
     private Agent agent;
 
+    /**
+     * 智能体模块
+     */
     private Module module;
+
 
     @Data
     public static class Agent {
+        /**
+         * 智能体ID
+         */
         private String agentId;
+
+        /**
+         * 智能体名称
+         */
         private String agentName;
+
+        /**
+         * 智能体描述
+         */
         private String agentDesc;
+
     }
 
     @Data
@@ -33,8 +55,8 @@ public class AiAgentConfigTableVO {
         public static class AiApi {
             private String baseUrl;
             private String apiKey;
-            private String completionsPath;
-            private String embeddingsPath;
+            private String completionsPath = "/v1/chat/completions";
+            private String embeddingsPath = "/v1/embeddings";
         }
 
         @Data
@@ -60,6 +82,7 @@ public class AiAgentConfigTableVO {
                 public static class StdioServerParameters {
                     private String name;
                     private Integer requestTimeout = 3000;
+                    private ServerParameters serverParameters;
 
                     @Data
                     public static class ServerParameters {
@@ -80,6 +103,9 @@ public class AiAgentConfigTableVO {
             }
             @Data
             public static class AgentWorkflow {
+                /**
+                 * 类型；loop、parallel、sequential
+                 */
                 private String type;
                 private String name;
                 private String description;
