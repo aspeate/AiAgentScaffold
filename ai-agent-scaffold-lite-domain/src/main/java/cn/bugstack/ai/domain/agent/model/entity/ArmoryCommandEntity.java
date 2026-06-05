@@ -3,7 +3,7 @@ package cn.bugstack.ai.domain.agent.model.entity;
 import cn.bugstack.ai.domain.agent.model.valobj.AiAgentConfigTableVO;
 import lombok.*;
 
-@Getter
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

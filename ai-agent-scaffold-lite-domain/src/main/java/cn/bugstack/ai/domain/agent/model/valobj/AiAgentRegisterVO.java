@@ -2,7 +2,7 @@ package cn.bugstack.ai.domain.agent.model.valobj;
 
 import lombok.*;
 
-@Getter
+@Data
 //@Builder
 //@NoArgsConstructor
 //@AllArgsConstructor
