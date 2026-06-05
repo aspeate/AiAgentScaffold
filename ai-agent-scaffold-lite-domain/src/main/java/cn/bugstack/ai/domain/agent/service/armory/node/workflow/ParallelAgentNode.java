@@ -7,6 +7,8 @@ import cn.bugstack.ai.domain.agent.model.valobj.enums.AgentTypeEnum;
 import cn.bugstack.ai.domain.agent.service.armory.AbstractArmorySupport;
 import cn.bugstack.ai.domain.agent.service.armory.factory.DefaultArmoryFactory;
 import cn.bugstack.wrench.design.framework.tree.StrategyHandler;
+import com.google.adk.agents.BaseAgent;
+import com.google.adk.agents.ParallelAgent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +20,23 @@ public class ParallelAgentNode extends AbstractArmorySupport {
     @Override
     protected AiAgentRegisterVO doApply(ArmoryCommandEntity requestParameter, DefaultArmoryFactory.DynamicContext dynamicContext) throws Exception {
         log.info("Ai Agent 装配操作 ParallelAgentNode");
-        return null;
+
+        List<AiAgentConfigTableVO.Module.ChatModel.AgentWorkflow> agentWorkflows = dynamicContext.getAgentWorkflows();
+        AiAgentConfigTableVO.Module.ChatModel.AgentWorkflow agentWorkflow = agentWorkflows.remove(0);
+
+        List<String> subAgentNames = agentWorkflow.getSubAgents();
+        List<BaseAgent> subAgents = dynamicContext.getAgents(subAgentNames);
+
+        ParallelAgent paralleAgent =
+                ParallelAgent.builder()
+                        .name(agentWorkflow.getName())
+                        .subAgents(subAgents)
+                        .description(agentWorkflow.getDescription())
+                        .build();
+
+        dynamicContext.getAgentGroup().put(agentWorkflow.getName(), paralleAgent);
+
+        return router(requestParameter,dynamicContext);
     }
 
     @Override
