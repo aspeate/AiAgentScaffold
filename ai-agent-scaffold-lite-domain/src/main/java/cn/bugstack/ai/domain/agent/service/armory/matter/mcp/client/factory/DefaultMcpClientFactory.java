@@ -1,10 +1,10 @@
-package cn.bugstack.ai.domain.agent.service.armory.mcp.client.factory;
+package cn.bugstack.ai.domain.agent.service.armory.matter.mcp.client.factory;
 
 import cn.bugstack.ai.domain.agent.model.valobj.AiAgentConfigTableVO;
-import cn.bugstack.ai.domain.agent.service.armory.mcp.client.ToolMcpCreateService;
-import cn.bugstack.ai.domain.agent.service.armory.mcp.client.impl.LocalToolMcpCreateService;
-import cn.bugstack.ai.domain.agent.service.armory.mcp.client.impl.SSEToolMcpCreateService;
-import cn.bugstack.ai.domain.agent.service.armory.mcp.client.impl.StdioToolMcpCreateService;
+import cn.bugstack.ai.domain.agent.service.armory.matter.mcp.client.ToolMcpCreateService;
+import cn.bugstack.ai.domain.agent.service.armory.matter.mcp.client.impl.LocalToolMcpCreateService;
+import cn.bugstack.ai.domain.agent.service.armory.matter.mcp.client.impl.SSEToolMcpCreateService;
+import cn.bugstack.ai.domain.agent.service.armory.matter.mcp.client.impl.StdioToolMcpCreateService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

@@ -37,3 +37,6 @@ ai:
 #                  - ResearchAgent
             runner:
               agent-name: ResearchAgent
+              plugin-name-list:
+                - myTestPlugin
+                - mylogPlugin

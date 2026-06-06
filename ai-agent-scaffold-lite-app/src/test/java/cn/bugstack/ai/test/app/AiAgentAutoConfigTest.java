@@ -37,7 +37,7 @@ public class AiAgentAutoConfigTest {
 
         Session session = runner.sessionService().createSession(appName, "wang").blockingGet();
 
-        Content userMsg = Content.fromParts(Part.fromText("搜索一下咖啡的作用"));
+        Content userMsg = Content.fromParts(Part.fromText("今天几月几日"));
         Flowable<Event> events = runner.runAsync("wang", session.id(), userMsg);
 
         List<String> outputs = new ArrayList<>();
