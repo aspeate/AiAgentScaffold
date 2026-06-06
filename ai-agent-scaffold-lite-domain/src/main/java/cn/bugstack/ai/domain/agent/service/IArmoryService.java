@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface IArmoryService {
 
-    void acceptArmoryAgent(List<AiAgentConfigTableVO> tables) throws Exception;
+    void acceptArmoryAgents(List<AiAgentConfigTableVO> tables) throws Exception;
 }

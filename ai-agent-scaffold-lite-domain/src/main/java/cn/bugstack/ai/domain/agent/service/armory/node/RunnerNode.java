@@ -38,7 +38,7 @@ public class RunnerNode extends AbstractArmorySupport {
                 .build();
 
         //注册到spring容器
-        registerBean(agentId, InMemoryRunner.class, runner);
+        registerBean(agentId, AiAgentRegisterVO.class, aiAgentRegisterVO);
 
         return aiAgentRegisterVO;
     }
