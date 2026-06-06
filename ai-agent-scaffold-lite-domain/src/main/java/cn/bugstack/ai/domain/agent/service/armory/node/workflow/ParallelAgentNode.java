@@ -21,47 +21,25 @@ public class ParallelAgentNode extends AbstractArmorySupport {
     protected AiAgentRegisterVO doApply(ArmoryCommandEntity requestParameter, DefaultArmoryFactory.DynamicContext dynamicContext) throws Exception {
         log.info("Ai Agent 装配操作 ParallelAgentNode");
 
-        List<AiAgentConfigTableVO.Module.ChatModel.AgentWorkflow> agentWorkflows = dynamicContext.getAgentWorkflows();
-        AiAgentConfigTableVO.Module.ChatModel.AgentWorkflow agentWorkflow = agentWorkflows.remove(0);
+        AiAgentConfigTableVO.Module.ChatModel.AgentWorkflow currentAgentWorkflow = dynamicContext.getCurrentAgentWorkflow();
 
-        List<String> subAgentNames = agentWorkflow.getSubAgents();
+        List<String> subAgentNames = currentAgentWorkflow.getSubAgents();
         List<BaseAgent> subAgents = dynamicContext.getAgents(subAgentNames);
 
         ParallelAgent paralleAgent =
                 ParallelAgent.builder()
-                        .name(agentWorkflow.getName())
+                        .name(currentAgentWorkflow.getName())
                         .subAgents(subAgents)
-                        .description(agentWorkflow.getDescription())
+                        .description(currentAgentWorkflow.getDescription())
                         .build();
 
-        dynamicContext.getAgentGroup().put(agentWorkflow.getName(), paralleAgent);
+        dynamicContext.getAgentGroup().put(currentAgentWorkflow.getName(), paralleAgent);
 
         return router(requestParameter,dynamicContext);
     }
 
     @Override
     public StrategyHandler<ArmoryCommandEntity, DefaultArmoryFactory.DynamicContext, AiAgentRegisterVO> get(ArmoryCommandEntity requestParameter, DefaultArmoryFactory.DynamicContext dynamicContext) throws Exception {
-        List<AiAgentConfigTableVO.Module.ChatModel.AgentWorkflow> agentWorkflows = dynamicContext.getAgentWorkflows();
-
-        if (agentWorkflows ==  null || agentWorkflows.isEmpty()){
-            return defaultStrategyHandler;
-        }
-
-        AiAgentConfigTableVO.Module.ChatModel.AgentWorkflow agentWorkflow = agentWorkflows.get(0);
-
-        String type = agentWorkflow.getType();
-        AgentTypeEnum agentTypeEnum = AgentTypeEnum.fromType(type);
-
-        if (agentTypeEnum == null) {
-            throw new RuntimeException("请配置正确的智能体工作流类型");
-        }
-
-        String node = agentTypeEnum.getNode();
-
-        return switch (node){
-            case "loopAgentNode" -> getBean("loopAgentNode");
-            case "sequentialAgentNode" -> getBean("sequentialAgentNode");
-            default -> defaultStrategyHandler;
-        };
+        return getBean("agentWorkFlowNode");
     }
 }

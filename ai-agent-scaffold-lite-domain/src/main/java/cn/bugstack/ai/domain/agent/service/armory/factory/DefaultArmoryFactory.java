@@ -6,7 +6,6 @@ import cn.bugstack.ai.domain.agent.model.valobj.AiAgentRegisterVO;
 import cn.bugstack.ai.domain.agent.service.armory.node.RootNode;
 import cn.bugstack.wrench.design.framework.tree.StrategyHandler;
 import com.google.adk.agents.BaseAgent;
-import com.google.adk.agents.SequentialAgent;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class DefaultArmoryFactory {
@@ -46,12 +46,9 @@ public class DefaultArmoryFactory {
          */
         private Map<String, BaseAgent> agentGroup = new HashMap<>();
 
+        private AtomicInteger currentStepIndex = new AtomicInteger(0);
 
-        /**
-         * 智能体Workflows
-         */
-        private List<AiAgentConfigTableVO.Module.ChatModel.AgentWorkflow> agentWorkflows = new ArrayList<>();
-
+        private AiAgentConfigTableVO.Module.ChatModel.AgentWorkflow currentAgentWorkflow;
 
         private Map<String, Object> dataObjects = new HashMap<>();
 
@@ -71,6 +68,13 @@ public class DefaultArmoryFactory {
                 if (agent != null) agents.add(agent);
             }
             return agents;
+        }
+
+        public void addCurrentStepIndex() {
+            currentStepIndex.incrementAndGet();
+        }
+        public int getCurrentStepIndex() {
+            return currentStepIndex.get();
         }
     }
 }

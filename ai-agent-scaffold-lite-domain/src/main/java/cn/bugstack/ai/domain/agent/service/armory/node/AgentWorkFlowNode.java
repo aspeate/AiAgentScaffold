@@ -36,26 +36,26 @@ public class AgentWorkFlowNode extends AbstractArmorySupport {
         AiAgentConfigTableVO aiAgentConfigTableVO = requestParameter.getAiAgentConfigTableVO();
         List<AiAgentConfigTableVO.Module.ChatModel.AgentWorkflow> agentWorkflows = aiAgentConfigTableVO.getModule().getAgentWorkflows();
 
-        if (agentWorkflows ==  null || agentWorkflows.isEmpty()){
+        if (agentWorkflows ==  null || agentWorkflows.isEmpty() || dynamicContext.getCurrentStepIndex() >= agentWorkflows.size()){
+            dynamicContext.setCurrentAgentWorkflow(null);
             return router(requestParameter, dynamicContext);
         }
 
-        dynamicContext.setAgentWorkflows(agentWorkflows);
+        dynamicContext.setCurrentAgentWorkflow(agentWorkflows.get(dynamicContext.getCurrentStepIndex()));
+        dynamicContext.addCurrentStepIndex();
 
         return router(requestParameter, dynamicContext);
     }
 
     @Override
     public StrategyHandler<ArmoryCommandEntity, DefaultArmoryFactory.DynamicContext, AiAgentRegisterVO> get(ArmoryCommandEntity requestParameter, DefaultArmoryFactory.DynamicContext dynamicContext) throws Exception {
-        List<AiAgentConfigTableVO.Module.ChatModel.AgentWorkflow> agentWorkflows = dynamicContext.getAgentWorkflows();
+        AiAgentConfigTableVO.Module.ChatModel.AgentWorkflow currentAgentWorkflow = dynamicContext.getCurrentAgentWorkflow();
 
-        if (agentWorkflows ==  null || agentWorkflows.isEmpty()){
+        if (currentAgentWorkflow ==  null ){
             return runnerNode;
         }
 
-        AiAgentConfigTableVO.Module.ChatModel.AgentWorkflow agentWorkflow = agentWorkflows.get(0);
-
-        String type = agentWorkflow.getType();
+        String type = currentAgentWorkflow.getType();
         AgentTypeEnum agentTypeEnum = AgentTypeEnum.fromType(type);
 
         if (agentTypeEnum == null) {
@@ -68,7 +68,7 @@ public class AgentWorkFlowNode extends AbstractArmorySupport {
             case "loopAgentNode" -> loopAgentNode;
             case "parallelAgentNode" -> parallelAgentNode;
             case "sequentialAgentNode" -> sequentialAgentNode;
-            default -> defaultStrategyHandler;
+            default -> runnerNode;
         };
     }
 }
