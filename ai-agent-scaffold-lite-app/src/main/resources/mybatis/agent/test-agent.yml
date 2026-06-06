@@ -27,9 +27,11 @@ ai:
                 description: 搜索助手
                 instruction: 你是一个搜索助手,根据用户的请求搜索.
                 output-key: generated_code
-            agent-workflows:
-              - type: sequential
-                name: ResearchSequentialAgent
-                description: 搜索助手
-                sub-agents:
-                  - ResearchAgent
+#            agent-workflows:
+#              - type: sequential
+#                name: ResearchSequentialAgent
+#                description: 搜索助手
+#                sub-agents:
+#                  - ResearchAgent
+            runner:
+              agent-name: ResearchAgent

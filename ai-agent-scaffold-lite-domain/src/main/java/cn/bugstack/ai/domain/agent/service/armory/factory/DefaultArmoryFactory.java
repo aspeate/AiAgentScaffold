@@ -45,10 +45,7 @@ public class DefaultArmoryFactory {
          * 智能体配置组
          */
         private Map<String, BaseAgent> agentGroup = new HashMap<>();
-        /**
-         * 把它当做最后一个智能体节点
-         */
-        private SequentialAgent sequentialAgent;
+
 
         /**
          * 智能体Workflows

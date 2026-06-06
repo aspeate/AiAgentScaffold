@@ -49,6 +49,7 @@ public class AiAgentConfigTableVO {
         private ChatModel chatModel;
         private List<ChatModel.Agent> agents;
         private List<ChatModel.AgentWorkflow> agentWorkflows;
+        private ChatModel.Runner runner;
 
 
         @Data
@@ -111,6 +112,10 @@ public class AiAgentConfigTableVO {
                 private String description;
                 private List<String> subAgents;
                 private Integer maxIterations = 3;
+            }
+            @Data
+            public static class Runner {
+                private String agentName;
             }
 
 

@@ -25,6 +25,8 @@ public class AgentWorkFlowNode extends AbstractArmorySupport {
     private ParallelAgentNode parallelAgentNode;
     @Resource
     private SequentialAgentNode sequentialAgentNode;
+    @Resource
+    private RunnerNode runnerNode;
 
 
     @Override
@@ -35,7 +37,7 @@ public class AgentWorkFlowNode extends AbstractArmorySupport {
         List<AiAgentConfigTableVO.Module.ChatModel.AgentWorkflow> agentWorkflows = aiAgentConfigTableVO.getModule().getAgentWorkflows();
 
         if (agentWorkflows ==  null || agentWorkflows.isEmpty()){
-            throw new RuntimeException("请配置智能体工作流");
+            return router(requestParameter, dynamicContext);
         }
 
         dynamicContext.setAgentWorkflows(agentWorkflows);
@@ -46,6 +48,11 @@ public class AgentWorkFlowNode extends AbstractArmorySupport {
     @Override
     public StrategyHandler<ArmoryCommandEntity, DefaultArmoryFactory.DynamicContext, AiAgentRegisterVO> get(ArmoryCommandEntity requestParameter, DefaultArmoryFactory.DynamicContext dynamicContext) throws Exception {
         List<AiAgentConfigTableVO.Module.ChatModel.AgentWorkflow> agentWorkflows = dynamicContext.getAgentWorkflows();
+
+        if (agentWorkflows ==  null || agentWorkflows.isEmpty()){
+            return runnerNode;
+        }
+
         AiAgentConfigTableVO.Module.ChatModel.AgentWorkflow agentWorkflow = agentWorkflows.get(0);
 
         String type = agentWorkflow.getType();
