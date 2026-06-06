@@ -22,6 +22,8 @@ ai:
                     base-uri: http://appbuilder.baidu.com/v2/ai_search/mcp/
                     sse-endpoint: sse?api_key=bce-v3/ALTAK-46QExmaIIXSNAidBVTCkk/4072a769cf336f0ef64ebaad9c1c76fe2543b6f6
                     request-timeout: 5000
+#                - local:
+#                    name: myToolCallbackProvider
             agents:
               - name: ResearchAgent
                 description: 搜索助手

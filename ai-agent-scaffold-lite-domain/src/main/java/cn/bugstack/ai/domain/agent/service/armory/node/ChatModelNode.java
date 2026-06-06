@@ -5,6 +5,8 @@ import cn.bugstack.ai.domain.agent.model.valobj.AiAgentConfigTableVO;
 import cn.bugstack.ai.domain.agent.model.valobj.AiAgentRegisterVO;
 import cn.bugstack.ai.domain.agent.service.armory.AbstractArmorySupport;
 import cn.bugstack.ai.domain.agent.service.armory.factory.DefaultArmoryFactory;
+import cn.bugstack.ai.domain.agent.service.armory.mcp.client.ToolMcpCreateService;
+import cn.bugstack.ai.domain.agent.service.armory.mcp.client.factory.DefaultMcpClientFactory;
 import cn.bugstack.wrench.design.framework.tree.StrategyHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.modelcontextprotocol.client.McpClient;
@@ -21,6 +23,7 @@ import org.springframework.ai.mcp.SyncMcpToolCallbackProvider;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
+import org.springframework.ai.tool.ToolCallback;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -35,6 +38,9 @@ public class ChatModelNode extends AbstractArmorySupport {
     @Resource
     private AgentNode agentNode;
 
+    @Resource
+    private DefaultMcpClientFactory defaultMcpClientFactory;
+
     @Override
     protected AiAgentRegisterVO doApply(ArmoryCommandEntity requestParameter, DefaultArmoryFactory.DynamicContext dynamicContext) throws Exception {
         log.info("Ai Agent 装配操作 ChatModelNode");
@@ -43,20 +49,30 @@ public class ChatModelNode extends AbstractArmorySupport {
         //从yml文件中获取配置
         AiAgentConfigTableVO aiAgentConfigTableVO = requestParameter.getAiAgentConfigTableVO();
         AiAgentConfigTableVO.Module.ChatModel chatModelConfig = aiAgentConfigTableVO.getModule().getChatModel();
-        //把从yml文件中获取的配置ToolMcp转换成McpSyncClient
-        List<McpSyncClient> mcpSyncClients = new ArrayList<>();
         List<AiAgentConfigTableVO.Module.ChatModel.ToolMcp> toolMcpList = chatModelConfig.getToolMcpList();
+
+        //构建mcp服务(工厂)
+        List<ToolCallback> toolCallbackList = new ArrayList<>();
         for (AiAgentConfigTableVO.Module.ChatModel.ToolMcp toolMcp : toolMcpList) {
-            mcpSyncClients.add(createMcpSyncClient(toolMcp));
+            ToolMcpCreateService toolMcpCreateService = defaultMcpClientFactory.getToolMcpCreateService(toolMcp);
+            ToolCallback[] toolCallbacks = toolMcpCreateService.buildCallback(toolMcp);
+            toolCallbackList.addAll(List.of(toolCallbacks));
         }
+
+//        //把从yml文件中获取的配置ToolMcp转换成McpSyncClient
+//        List<McpSyncClient> mcpSyncClients = new ArrayList<>();
+//        for (AiAgentConfigTableVO.Module.ChatModel.ToolMcp toolMcp : toolMcpList) {
+//            mcpSyncClients.add(createMcpSyncClient(toolMcp));
+//        }
         //创建ChatModel对象
         ChatModel chatModel = OpenAiChatModel.builder()
                 .openAiApi(openAiApi)
                 .defaultOptions(OpenAiChatOptions.builder()
                         .model(chatModelConfig.getModel())
-                        .toolCallbacks(SyncMcpToolCallbackProvider.builder()
-                                .mcpClients(mcpSyncClients).build()
-                                .getToolCallbacks())
+//                        .toolCallbacks(SyncMcpToolCallbackProvider.builder()
+//                                .mcpClients(mcpSyncClients).build()
+//                                .getToolCallbacks())
+                        .toolCallbacks(toolCallbackList)
                         .build())
                 .build();
         //把ChatModel对象放入上下文中
@@ -70,6 +86,9 @@ public class ChatModelNode extends AbstractArmorySupport {
         return agentNode;
     }
 
+    /**
+     * 原始方法
+     */
     private McpSyncClient createMcpSyncClient(AiAgentConfigTableVO.Module.ChatModel.ToolMcp toolMcp) throws Exception {
         AiAgentConfigTableVO.Module.ChatModel.ToolMcp.SSEServerParameters sseConfig = toolMcp.getSse();
         AiAgentConfigTableVO.Module.ChatModel.ToolMcp.StdioServerParameters stdioConfig = toolMcp.getStdio();

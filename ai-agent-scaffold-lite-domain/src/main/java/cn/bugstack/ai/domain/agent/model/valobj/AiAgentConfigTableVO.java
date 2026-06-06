@@ -70,6 +70,7 @@ public class AiAgentConfigTableVO {
 
                 private SSEServerParameters sse;
                 private StdioServerParameters stdio;
+                private LocalParameters local;
 
                 @Data
                 public static class SSEServerParameters {
@@ -91,6 +92,11 @@ public class AiAgentConfigTableVO {
                         private List<String> args;
                         private Map<String, String> env;
                     }
+                }
+
+                @Data
+                public static class LocalParameters {
+                    private String name;
                 }
             }
 
