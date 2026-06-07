@@ -11,7 +11,7 @@ ai:
           module:
             ai-api:
               base-url: https://api.deepseek.com
-              api-key:
+              api-key: sk-9976f6a8a9a9487da97f738174425196
               completions-path: v1/chat/completions
               embeddings-path: v1/embeddings
             chat-model:
@@ -20,7 +20,7 @@ ai:
                 - sse:
                     name: baidu-search
                     base-uri: http://appbuilder.baidu.com/v2/ai_search/mcp/
-                    sse-endpoint: sse?api_key=
+                    sse-endpoint: sse?api_key=bce-v3/ALTAK-SUkrJ7f80Fip5EbrirTSQ/cf025a1663b27cdd316fd3469b9c4b5126788ee0
                     request-timeout: 5000
 #                - local:
 #                    name: myToolCallbackProvider
