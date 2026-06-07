@@ -1,0 +1,69 @@
+package cn.bugstack.ai.domain.agent.model.entity;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ChatCommandEntity {
+
+    private String agentId;
+
+    private String userId;
+
+    private String sessionId;
+
+    private List<Content.Text> texts;
+
+    private List<Content.File> files;
+
+    private List<Content.InlineData> inlineDatas;
+
+    @Data
+    public static class Content {
+        @Data
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class Text {
+            private String message;
+        }
+
+        @Data
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class File {
+            private String fileUrl;
+            private String mimeType;
+        }
+
+        @Data
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class InlineData {
+            private byte[] bytes;
+            private String mimeType;
+        }
+
+    }
+
+    public ChatCommandEntity buileSessionCommand(String agentId, String userId){
+        return ChatCommandEntity.builder()
+                .agentId(agentId)
+                .userId(userId)
+                .build();
+    }
+    public ChatCommandEntity buileChatCommand(String agentId, String userId,String message){
+        return ChatCommandEntity.builder()
+                .agentId(agentId)
+                .userId(userId)
+                .texts(List.of(new Content.Text(message)))
+                .build();
+    }
+
+}
