@@ -1,4 +1,4 @@
-package cn.bugstack.ai.test.api.tool;
+package cn.bugstack.ai.test.api.tool.mcp;
 
 import io.modelcontextprotocol.client.McpClient;
 import io.modelcontextprotocol.client.McpSyncClient;

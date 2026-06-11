@@ -7,6 +7,7 @@ import cn.bugstack.ai.domain.agent.service.armory.AbstractArmorySupport;
 import cn.bugstack.ai.domain.agent.service.armory.factory.DefaultArmoryFactory;
 import cn.bugstack.ai.domain.agent.service.armory.matter.mcp.client.ToolMcpCreateService;
 import cn.bugstack.ai.domain.agent.service.armory.matter.mcp.client.factory.DefaultMcpClientFactory;
+import cn.bugstack.ai.domain.agent.service.armory.matter.skills.ToolSkillCreateService;
 import cn.bugstack.wrench.design.framework.tree.StrategyHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.modelcontextprotocol.client.McpClient;
@@ -39,6 +40,8 @@ public class ChatModelNode extends AbstractArmorySupport {
 
     @Resource
     private DefaultMcpClientFactory defaultMcpClientFactory;
+    @Resource
+    private ToolSkillCreateService toolSkillCreateService;
 
     @Override
     protected AiAgentRegisterVO doApply(ArmoryCommandEntity requestParameter, DefaultArmoryFactory.DynamicContext dynamicContext) throws Exception {
@@ -49,13 +52,24 @@ public class ChatModelNode extends AbstractArmorySupport {
         AiAgentConfigTableVO aiAgentConfigTableVO = requestParameter.getAiAgentConfigTableVO();
         AiAgentConfigTableVO.Module.ChatModel chatModelConfig = aiAgentConfigTableVO.getModule().getChatModel();
         List<AiAgentConfigTableVO.Module.ChatModel.ToolMcp> toolMcpList = chatModelConfig.getToolMcpList();
+        List<AiAgentConfigTableVO.Module.ChatModel.ToolSkills> toolSkillsList = chatModelConfig.getToolSkillsList();
 
-        //构建mcp服务(工厂)
+        //构建mcp/skill服务(工厂)
         List<ToolCallback> toolCallbackList = new ArrayList<>();
-        for (AiAgentConfigTableVO.Module.ChatModel.ToolMcp toolMcp : toolMcpList) {
-            ToolMcpCreateService toolMcpCreateService = defaultMcpClientFactory.getToolMcpCreateService(toolMcp);
-            ToolCallback[] toolCallbacks = toolMcpCreateService.buildCallback(toolMcp);
-            toolCallbackList.addAll(List.of(toolCallbacks));
+
+        if (toolMcpList != null && !toolMcpList.isEmpty()) {
+            for (AiAgentConfigTableVO.Module.ChatModel.ToolMcp toolMcp : toolMcpList) {
+                ToolMcpCreateService toolMcpCreateService = defaultMcpClientFactory.getToolMcpCreateService(toolMcp);
+                ToolCallback[] toolCallbacks = toolMcpCreateService.buildCallback(toolMcp);
+                toolCallbackList.addAll(List.of(toolCallbacks));
+            }
+        }
+
+        if (toolSkillsList != null && !toolSkillsList.isEmpty()){
+            for (AiAgentConfigTableVO.Module.ChatModel.ToolSkills toolSkills : toolSkillsList) {
+                ToolCallback[] toolCallbacks = toolSkillCreateService.buildCallback(toolSkills);
+                toolCallbackList.addAll(List.of(toolCallbacks));
+            }
         }
 
 //        //把从yml文件中获取的配置ToolMcp转换成McpSyncClient

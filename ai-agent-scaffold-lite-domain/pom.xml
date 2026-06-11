@@ -39,6 +39,10 @@
             <groupId>cn.bugstack.ai</groupId>
             <artifactId>ai-agent-scaffold-lite-types</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springaicommunity</groupId>
+            <artifactId>spring-ai-agent-utils</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
